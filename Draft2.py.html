@@ -1,0 +1,78 @@
+<html>
+<head>
+<title>Draft2.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #808080;}
+.s3 { color: #6a8759;}
+.s4 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Draft2.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">requests   </span><span class="s2">#import request and json library</span>
+<span class="s0">import </span><span class="s1">json</span>
+
+<span class="s1">API_KEY = </span><span class="s3">&quot;16b6bf202ce16405f080ab511914f74d&quot;</span>
+
+<span class="s0">def </span><span class="s1">get_location():   </span><span class="s2"># defining user prompt function</span>
+
+    <span class="s0">while True</span><span class="s1">:   </span><span class="s2"># while loop is set to true so it will ask for a zip code or city name</span>
+        <span class="s1">location = input(</span><span class="s3">&quot;Enter a city name or zip code to search for the weather forecast in that location (q to quit): &quot;</span><span class="s1">)  </span><span class="s2"># user inputs the location to search</span>
+        <span class="s0">if </span><span class="s1">location.lower() == </span><span class="s3">&quot;q&quot;</span><span class="s1">:        </span><span class="s2">#If user inputs a q the code will exit</span>
+            <span class="s0">return None</span>
+        <span class="s0">elif </span><span class="s1">location.isnumeric():         </span><span class="s2"># if the location is numeric it will search and return the json data for the 5 digit zip code or city name</span>
+            <span class="s0">return </span><span class="s1">{</span><span class="s3">&quot;zip&quot;</span><span class="s1">: location}</span>
+        <span class="s0">else</span><span class="s1">:</span>
+            <span class="s0">return </span><span class="s1">{</span><span class="s3">&quot;q&quot;</span><span class="s1">: location}    </span><span class="s2"># if the user inputs a string it will search and return data for the city</span>
+
+<span class="s0">def </span><span class="s1">get_weather_data(location):</span>
+
+    <span class="s1">url = </span><span class="s3">&quot;http://api.openweathermap.org/data/2.5/weather&quot;</span>
+    <span class="s1">params = {</span><span class="s3">&quot;appid&quot;</span><span class="s1">: API_KEY</span><span class="s0">, </span><span class="s1">**location</span><span class="s0">, </span><span class="s3">&quot;units&quot;</span><span class="s1">: </span><span class="s3">&quot;imperial&quot;</span><span class="s1">}  </span><span class="s2"># Request data in Fahrenheit and set the parameters for the function</span>
+    <span class="s0">try</span><span class="s1">:</span>
+        <span class="s1">response = requests.get(url</span><span class="s0">, </span><span class="s1">params=params)</span>
+        <span class="s1">response.raise_for_status()  </span><span class="s2"># Raise exception if response status is not ok or un-findable</span>
+        <span class="s0">return </span><span class="s1">json.loads(response.text)  </span><span class="s2">#returns json response if search is good</span>
+    <span class="s0">except </span><span class="s1">requests.exceptions.RequestException </span><span class="s0">as </span><span class="s1">e:     </span><span class="s2"># return the value unless it comes back false</span>
+        <span class="s1">print(</span><span class="s3">&quot;Connection error:&quot;</span><span class="s0">, </span><span class="s1">e)   </span><span class="s2">#If it does this it will print connection error return a none value, and e is the type of error  and the web site associated with it.</span>
+        <span class="s0">return None</span>
+
+<span class="s0">def </span><span class="s1">print_weather_data(data):   </span><span class="s2">#Defining weather data function</span>
+
+    <span class="s0">if </span><span class="s1">data </span><span class="s0">is None</span><span class="s1">:</span>
+        <span class="s0">return</span>
+    <span class="s1">name = data[</span><span class="s3">&quot;name&quot;</span><span class="s1">]    </span><span class="s2">#sets the vaiables to the json data response</span>
+    <span class="s1">country = data[</span><span class="s3">&quot;sys&quot;</span><span class="s1">][</span><span class="s3">&quot;country&quot;</span><span class="s1">]</span>
+    <span class="s1">temp = data[</span><span class="s3">&quot;main&quot;</span><span class="s1">][</span><span class="s3">&quot;temp&quot;</span><span class="s1">]</span>
+    <span class="s1">feels_like = data[</span><span class="s3">&quot;main&quot;</span><span class="s1">][</span><span class="s3">&quot;feels_like&quot;</span><span class="s1">]</span>
+    <span class="s1">weather_desc = data[</span><span class="s3">&quot;weather&quot;</span><span class="s1">][</span><span class="s4">0</span><span class="s1">][</span><span class="s3">&quot;description&quot;</span><span class="s1">]</span>
+    <span class="s1">print(</span><span class="s3">f&quot;The weather forecast in </span><span class="s0">{</span><span class="s1">name</span><span class="s0">}</span><span class="s3">, </span><span class="s0">{</span><span class="s1">country</span><span class="s0">} </span><span class="s3">is:&quot;</span><span class="s1">)  </span><span class="s2">#prints json data form set by code</span>
+    <span class="s1">print(</span><span class="s3">f&quot;Actual Temp: </span><span class="s0">{</span><span class="s1">temp</span><span class="s0">:</span><span class="s3">.1f</span><span class="s0">} </span><span class="s3">°F&quot;</span><span class="s1">)</span>
+    <span class="s1">print(</span><span class="s3">f&quot;It feels like: </span><span class="s0">{</span><span class="s1">feels_like</span><span class="s0">:</span><span class="s3">.1f</span><span class="s0">} </span><span class="s3">°F&quot;</span><span class="s1">)</span>
+    <span class="s1">print(</span><span class="s3">f&quot;The student weatherman today says there will be: </span><span class="s0">{</span><span class="s1">weather_desc.capitalize()</span><span class="s0">}</span><span class="s3">&quot;</span><span class="s1">)  </span><span class="s2"># this will capitalize the first letter in the string</span>
+
+<span class="s0">def </span><span class="s1">main():  </span><span class="s2">#main function loop</span>
+
+    <span class="s1">print(</span><span class="s3">&quot;Student Weather Forecast&quot;</span><span class="s1">)</span>
+    <span class="s0">while True</span><span class="s1">:                     </span><span class="s2">#setting up a while loop for the location</span>
+        <span class="s1">location = get_location()     </span><span class="s2">#location variable set to retrieve the user prompted location</span>
+        <span class="s0">if </span><span class="s1">location </span><span class="s0">is None</span><span class="s1">:</span>
+            <span class="s0">break              </span><span class="s2">#if return as none the program will exit</span>
+        <span class="s1">data = get_weather_data(location)  </span><span class="s2">#setting data variable to user prompted location with the retrieved data from API</span>
+        <span class="s0">if </span><span class="s1">data </span><span class="s0">is None</span><span class="s1">:</span>
+            <span class="s1">print(</span><span class="s3">&quot;Something went wrong and I could not get weather data. Can you please try again?&quot;</span><span class="s1">)  </span><span class="s2">#If the data reponse is none it will print this message</span>
+        <span class="s0">else</span><span class="s1">:</span>
+            <span class="s1">print_weather_data(data)  </span><span class="s2">#otherwise it will print the retrieved json data from api and return the values</span>
+
+<span class="s0">if </span><span class="s1">__name__ == </span><span class="s3">&quot;__main__&quot;</span><span class="s1">:</span>
+    <span class="s1">main()  </span><span class="s2"># calling on the main function to run</span>
+</pre>
+</body>
+</html>
